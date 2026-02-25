@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem; // 必须引用这个，因为你用了 Starter Assets
+using UnityEngine.InputSystem;
 
 public class DoorController : MonoBehaviour
 {
@@ -9,44 +9,63 @@ public class DoorController : MonoBehaviour
 
     private Animator anim;
     private bool isPlayerNearby = false;
-    private bool isOpen = false;
+    private bool isOpen = false; // 记录门当前是不是开着的
 
     void Start()
     {
-        anim = GetComponent<Animator>(); // 自动找到门身上的动画组件
-        if (uiText != null) uiText.text = ""; // 游戏开始先清空提示
+        anim = GetComponent<Animator>();
+        if (uiText != null) uiText.text = "";
     }
 
     void Update()
     {
-        // 条件：人在附近 + 门没开 + 按了F键
-        if (isPlayerNearby && !isOpen && Keyboard.current.fKey.wasPressedThisFrame)
+        // 只要人在附近 + 按了F (去掉了 !isOpen 的限制，允许反复按)
+        if (isPlayerNearby && Keyboard.current.fKey.wasPressedThisFrame)
         {
-            // 核心命令：直接强行播放名为 "DoorOpen" 的状态！
-            anim.Play("DoorOpen");
-
-            isOpen = true; // 标记门开了，以后再按F就不理你了
-            if (uiText != null) uiText.text = ""; // 隐藏提示字
+            if (isOpen)
+            {
+                // === 如果门是开着的，就执行关门 ===
+                anim.Play("DoorClose"); // 播放关门动画
+                isOpen = false;         // 标记状态为“关”
+                UpdateUI();             // 更新提示文字
+            }
+            else
+            {
+                // === 如果门是关着的，就执行开门 ===
+                anim.Play("DoorOpen");  // 播放开门动画
+                isOpen = true;          // 标记状态为“开”
+                UpdateUI();             // 更新提示文字
+            }
         }
     }
 
-    // 走进感应区
+    // 一个小函数，用来根据门的状态自动切换提示文字
+    void UpdateUI()
+    {
+        if (uiText != null && isPlayerNearby)
+        {
+            if (isOpen)
+                uiText.text = "按 [F] 关门";
+            else
+                uiText.text = "按 [F] 开门";
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !isOpen)
+        if (other.CompareTag("Player"))
         {
             isPlayerNearby = true;
-            if (uiText != null) uiText.text = "按 [F] 开门";
+            UpdateUI(); // 走进感应区时，立刻显示正确的提示
         }
     }
 
-    // 离开感应区
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             isPlayerNearby = false;
-            if (uiText != null) uiText.text = "";
+            if (uiText != null) uiText.text = ""; // 离开时清空文字
         }
     }
 }
