@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem; // 使用新输入系统
+using UnityEngine.InputSystem;
 
 public class TrashPickup : MonoBehaviour
 {
+    [Header("垃圾属性配置")]
+    public string trashName = "香蕉皮"; // 在 Inspector 中配置垃圾名称
+    public TrashCategory correctCategory = TrashCategory.厨余垃圾; // 在 Inspector 中选择正确分类
+
     private bool canPickup = false;
-    private Text promptText; // 借用你的开门提示文字
+    private Text promptText;
 
     void Start()
     {
-        // ⚠️ 极其重要的一步：让生成的垃圾自己去场景里找到那个 UI 文本
-        // 请务必把下面的 "这里填你UI物体的名字" 替换成你在 Hierarchy 里那个真实存在的 Text 物体名字！
         GameObject uiObj = GameObject.Find("Text");
-
         if (uiObj != null)
         {
             promptText = uiObj.GetComponent<Text>();
@@ -25,37 +26,41 @@ public class TrashPickup : MonoBehaviour
 
     void Update()
     {
-        // 如果玩家在范围内 + 按下了 F 键
-        if (canPickup && Keyboard.current.fKey.wasPressedThisFrame)
+        // 如果玩家在范围内 + 按下了 F 键 + 当前时间没有被冻结（防止在UI弹出的情况下继续按F）
+        if (canPickup && Keyboard.current.fKey.wasPressedThisFrame && Time.timeScale > 0f)
         {
-            // 1. 隐藏提示文字
             if (promptText != null) promptText.text = "";
 
-            // 2. 依然用控制台打印，确保逻辑跑通
-            Debug.Log("成功拾取！等以后再做计分板 UI");
+            // 核心交互：呼叫 UI 管理器弹出面板，并把自己的名字和正确分类传过去
+            if (ClassificationUIManager.Instance != null)
+            {
+                ClassificationUIManager.Instance.OpenClassificationPanel(trashName, correctCategory);
+            }
+            else
+            {
+                Debug.LogError("场景中没有找到 ClassificationUIManager！");
+            }
 
-            // 3. 销毁垃圾模型
+            // 将自己销毁（因为已经捡起来开始判定了）
             Destroy(gameObject);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // 当玩家走进垃圾的感应圈
         if (other.CompareTag("Player"))
         {
             canPickup = true;
-            if (promptText != null) promptText.text = "按 [F] 拾取垃圾";
+            if (promptText != null) promptText.text = "按 [F] 拾取 " + trashName;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // 当玩家离开感应圈
         if (other.CompareTag("Player"))
         {
             canPickup = false;
-            if (promptText != null) promptText.text = ""; // 离开时清空屏幕文字
+            if (promptText != null) promptText.text = "";
         }
     }
 }
