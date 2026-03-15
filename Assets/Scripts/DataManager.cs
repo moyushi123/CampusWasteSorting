@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.IO;
@@ -25,29 +25,29 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager Instance;
 
-    [Header("Ãæ°åÈİÆ÷")]
+    [Header("é¢æ¿å®¹å™¨")]
     public GameObject loginBox;
     public GameObject registerBox;
 
-    [Header("µ¯´°ÌáÊ¾ UI (ĞÂÔö)")]
+    [Header("å¼¹çª—æç¤º UI (æ–°å¢)")]
     public GameObject popupPanel;
     public Text popupText;
     public Button btnPopupConfirm;
 
-    [Header("µÇÂ¼½çÃæ UI")]
+    [Header("ç™»å½•ç•Œé¢ UI")]
     public InputField loginUsernameInput;
     public InputField loginPasswordInput;
     public Button btnLogin;
     public Button btnGoToRegister;
 
-    [Header("×¢²á½çÃæ UI")]
+    [Header("æ³¨å†Œç•Œé¢ UI")]
     public InputField regUsernameInput;
     public InputField regPasswordInput;
     public InputField regConfirmPasswordInput;
     public Button btnConfirmRegister;
     public Button btnBackToLogin;
 
-    [Header("ÔËĞĞÊ±ºËĞÄÊı¾İ")]
+    [Header("è¿è¡Œæ—¶æ ¸å¿ƒæ•°æ®")]
     public string currentUsername = "";
     public PlayerData currentPlayer;
 
@@ -70,14 +70,14 @@ public class DataManager : MonoBehaviour
     {
         saveDirectory = Application.persistentDataPath;
 
-        // Ä¬ÈÏÒş²Øµ¯´°£¬ÏÔÊ¾µÇÂ¼Ãæ°å
+        // é»˜è®¤éšè—å¼¹çª—ï¼Œæ˜¾ç¤ºç™»å½•é¢æ¿
         popupPanel.SetActive(false);
         ShowLoginBox();
 
-        // °ó¶¨µ¯´°µÄÈ·¶¨°´Å¥ÊÂ¼ş
+        // ç»‘å®šå¼¹çª—çš„ç¡®å®šæŒ‰é’®äº‹ä»¶
         btnPopupConfirm.onClick.AddListener(ClosePopup);
 
-        // °ó¶¨ÆäËû°´Å¥ÊÂ¼ş
+        // ç»‘å®šå…¶ä»–æŒ‰é’®äº‹ä»¶
         btnLogin.onClick.AddListener(OnLoginClicked);
         btnGoToRegister.onClick.AddListener(ShowRegisterBox);
         btnConfirmRegister.onClick.AddListener(OnRegisterClicked);
@@ -85,13 +85,13 @@ public class DataManager : MonoBehaviour
     }
 
     // ==========================================
-    // ĞÂÔö£ºÍ¨ÓÃµ¯´°¿ØÖÆÂß¼­
+    // æ–°å¢ï¼šé€šç”¨å¼¹çª—æ§åˆ¶é€»è¾‘
     // ==========================================
     private void ShowPopup(string message)
     {
         popupText.text = message;
         popupPanel.SetActive(true);
-        // È·±£µ¯´°ÔÚËùÓĞ UI µÄ×îÉÏ²ãÏÔÊ¾
+        // ç¡®ä¿å¼¹çª—åœ¨æ‰€æœ‰ UI çš„æœ€ä¸Šå±‚æ˜¾ç¤º
         popupPanel.transform.SetAsLastSibling();
     }
 
@@ -100,11 +100,14 @@ public class DataManager : MonoBehaviour
         popupPanel.SetActive(false);
     }
 
-    // --- ½çÃæÇĞ»»Âß¼­ ---
+    // --- ç•Œé¢åˆ‡æ¢é€»è¾‘ ---
     private void ShowLoginBox()
     {
         loginBox.SetActive(true);
         registerBox.SetActive(false);
+
+        // â¬…ï¸ ä¿®æ”¹ç‚¹ï¼šæ¯æ¬¡åˆ‡å›ç™»å½•æ—¶ï¼Œå½»åº•æ¸…ç©ºè´¦å·å’Œå¯†ç æ¡†
+        loginUsernameInput.text = "";
         loginPasswordInput.text = "";
     }
 
@@ -112,12 +115,13 @@ public class DataManager : MonoBehaviour
     {
         loginBox.SetActive(false);
         registerBox.SetActive(true);
+
         regUsernameInput.text = "";
         regPasswordInput.text = "";
         regConfirmPasswordInput.text = "";
     }
 
-    // --- ×¢²áÂß¼­ ---
+    // --- æ³¨å†Œé€»è¾‘ ---
     private void OnRegisterClicked()
     {
         string regName = regUsernameInput.text.Trim();
@@ -126,13 +130,13 @@ public class DataManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(regName) || string.IsNullOrEmpty(regPwd))
         {
-            ShowPopup("×¢²áÊ§°Ü£ºÕËºÅ»òÃÜÂë²»ÄÜÎª¿Õ£¡");
+            ShowPopup("æ³¨å†Œå¤±è´¥ï¼šè´¦å·æˆ–å¯†ç ä¸èƒ½ä¸ºç©ºï¼");
             return;
         }
 
         if (regPwd != regConfirmPwd)
         {
-            ShowPopup("×¢²áÊ§°Ü£ºÁ½´ÎÊäÈëµÄÃÜÂë²»Ò»ÖÂ£¡");
+            ShowPopup("æ³¨å†Œå¤±è´¥ï¼šä¸¤æ¬¡è¾“å…¥çš„å¯†ç ä¸ä¸€è‡´ï¼");
             return;
         }
 
@@ -140,7 +144,7 @@ public class DataManager : MonoBehaviour
 
         if (File.Exists(savePath))
         {
-            ShowPopup("×¢²áÊ§°Ü£º¸ÃÕËºÅÒÑ±»×¢²á£¬Çë»»Ò»¸öÕËºÅ£¡");
+            ShowPopup("æ³¨å†Œå¤±è´¥ï¼šè¯¥è´¦å·å·²è¢«æ³¨å†Œï¼Œè¯·æ¢ä¸€ä¸ªè´¦å·ï¼");
             return;
         }
 
@@ -153,12 +157,12 @@ public class DataManager : MonoBehaviour
         string json = JsonUtility.ToJson(newPlayer, true);
         File.WriteAllText(savePath, json);
 
-        // ×¢²á³É¹¦ÌáÊ¾£¬²¢ÇĞ»ØµÇÂ¼½çÃæ
-        ShowPopup("×¢²á³É¹¦£¡ÇëÊ¹ÓÃĞÂÕËºÅµÇÂ¼¡£");
+        // æ³¨å†ŒæˆåŠŸæç¤ºï¼Œå¹¶åˆ‡å›ç™»å½•ç•Œé¢
+        ShowPopup("æ³¨å†ŒæˆåŠŸï¼è¯·ä½¿ç”¨æ–°è´¦å·ç™»å½•ã€‚");
         ShowLoginBox();
     }
 
-    // --- µÇÂ¼Âß¼­ ---
+    // --- ç™»å½•é€»è¾‘ ---
     private void OnLoginClicked()
     {
         string loginName = loginUsernameInput.text.Trim();
@@ -166,7 +170,7 @@ public class DataManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(loginName) || string.IsNullOrEmpty(loginPwd))
         {
-            ShowPopup("µÇÂ¼Ê§°Ü£ºÕËºÅ»òÃÜÂë²»ÄÜÎª¿Õ£¡");
+            ShowPopup("ç™»å½•å¤±è´¥ï¼šè´¦å·æˆ–å¯†ç ä¸èƒ½ä¸ºç©ºï¼");
             return;
         }
 
@@ -174,7 +178,7 @@ public class DataManager : MonoBehaviour
 
         if (!File.Exists(savePath))
         {
-            ShowPopup("µÇÂ¼Ê§°Ü£ºÕËºÅ²»´æÔÚ£¬ÇëÏÈ×¢²á£¡");
+            ShowPopup("ç™»å½•å¤±è´¥ï¼šè´¦å·ä¸å­˜åœ¨ï¼Œè¯·å…ˆæ³¨å†Œï¼");
             return;
         }
 
@@ -183,33 +187,33 @@ public class DataManager : MonoBehaviour
 
         if (loadedData.password != loginPwd)
         {
-            ShowPopup("µÇÂ¼Ê§°Ü£ºÃÜÂë´íÎó£¡");
+            ShowPopup("ç™»å½•å¤±è´¥ï¼šå¯†ç é”™è¯¯ï¼");
             return;
         }
 
         currentUsername = loginName;
         currentPlayer = loadedData;
 
-        // µÇÂ¼³É¹¦Ê±£¬Ö±½ÓÌø×ª³¡¾°ÌåÑé¸üÁ÷³©£¬²»ĞèÒªÍæ¼ÒÔÙ¶àµãÒ»´Î¡°È·¶¨¡±
+        // ç™»å½•æˆåŠŸæ—¶ï¼Œç›´æ¥è·³è½¬åœºæ™¯ä½“éªŒæ›´æµç•…ï¼Œä¸éœ€è¦ç©å®¶å†å¤šç‚¹ä¸€æ¬¡â€œç¡®å®šâ€
         SceneManager.LoadScene("GameScene");
     }
 
 
     // ==========================================
-    // ĞÂÔö£ºÈ«¾Ö´æµµ·½·¨
+    // æ–°å¢ï¼šå…¨å±€å­˜æ¡£æ–¹æ³•
     // ==========================================
     public void SavePlayerData()
     {
-        // °²È«Ğ£Ñé£ºÈç¹ûÃ»ÓĞµÇÂ¼Íæ¼Ò£¬¾Í²»Ö´ĞĞ±£´æ
+        // å®‰å…¨æ ¡éªŒï¼šå¦‚æœæ²¡æœ‰ç™»å½•ç©å®¶ï¼Œå°±ä¸æ‰§è¡Œä¿å­˜
         if (currentPlayer == null || string.IsNullOrEmpty(currentUsername)) return;
 
         string savePath = Path.Combine(saveDirectory, currentUsername + "_Data.json");
 
-        // ½«µ±Ç°ÄÚ´æÀïµÄ currentPlayer ×îĞÂ×´Ì¬×ª»»³É JSON ²¢¸²¸ÇĞ´Èë±¾µØ
+        // å°†å½“å‰å†…å­˜é‡Œçš„ currentPlayer æœ€æ–°çŠ¶æ€è½¬æ¢æˆ JSON å¹¶è¦†ç›–å†™å…¥æœ¬åœ°
         string json = JsonUtility.ToJson(currentPlayer, true);
         File.WriteAllText(savePath, json);
 
-        Debug.Log("¡¾Êı¾İ³Ö¾Ã»¯¡¿Íæ¼Ò [" + currentUsername + "] µÄ·ÖÊıÓë´íÌâÒÑ¸üĞÂÖÁ±¾µØ JSON£¡");
+        Debug.Log("ã€æ•°æ®æŒä¹…åŒ–ã€‘ç©å®¶ [" + currentUsername + "] çš„åˆ†æ•°ä¸é”™é¢˜å·²æ›´æ–°è‡³æœ¬åœ° JSONï¼");
     }
 
 

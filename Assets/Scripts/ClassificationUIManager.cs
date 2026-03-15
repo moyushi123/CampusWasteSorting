@@ -81,7 +81,10 @@ public class ClassificationUIManager : MonoBehaviour
             feedbackText.color = Color.green;
             feedbackText.text = "✅ 判定成功！加 10 分！";
 
-            // ⬅️ 数据层：加分
+            // ⬅️ 新增：调用 GameManager 增加当局得分
+            if (GameManager.Instance != null) GameManager.Instance.AddScore(10);
+
+            // 累加总分的逻辑保留在 DataManager 中...
             if (DataManager.Instance != null && DataManager.Instance.currentPlayer != null)
             {
                 DataManager.Instance.currentPlayer.totalScore += 10;
@@ -91,6 +94,9 @@ public class ClassificationUIManager : MonoBehaviour
         {
             feedbackText.color = Color.red;
             feedbackText.text = "❌ 判定失败！【" + currentTrashName + "】不属于【" + chosenCategory.ToString() + "】哦！\n已记录至错题本，扣除 10 分。";
+
+            // ⬅️ 新增：调用 GameManager 扣除当局得分
+            if (GameManager.Instance != null) GameManager.Instance.AddScore(-10);
 
             // ⬅️ 数据层：扣分与写入错题本
             if (DataManager.Instance != null && DataManager.Instance.currentPlayer != null)
