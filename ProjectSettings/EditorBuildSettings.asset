@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/JapaneseSchool/LoginScene.unity
+    guid: 8ed10b98807cda44a8deb2d42b1cde76
+  - enabled: 1
+    path: Assets/JapaneseSchool/GameScene.unity
+    guid: 75a54addd83b26846a3354b5bde12b6c
   m_configObjects: {}

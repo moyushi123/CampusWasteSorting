@@ -80,14 +80,50 @@ public class ClassificationUIManager : MonoBehaviour
         {
             feedbackText.color = Color.green;
             feedbackText.text = "✅ 判定成功！加 10 分！";
+
+            // ⬅️ 数据层：加分
+            if (DataManager.Instance != null && DataManager.Instance.currentPlayer != null)
+            {
+                DataManager.Instance.currentPlayer.totalScore += 10;
+            }
         }
         else
         {
             feedbackText.color = Color.red;
             feedbackText.text = "❌ 判定失败！【" + currentTrashName + "】不属于【" + chosenCategory.ToString() + "】哦！\n已记录至错题本，扣除 10 分。";
+
+            // ⬅️ 数据层：扣分与写入错题本
+            if (DataManager.Instance != null && DataManager.Instance.currentPlayer != null)
+            {
+                var player = DataManager.Instance.currentPlayer;
+                player.totalScore -= 10; // 扣分
+
+                // 核心逻辑：查找错题本里是否已经存在这个垃圾了
+                WrongItemData existingItem = player.wrongBook.Find(item => item.trashName == currentTrashName);
+
+                if (existingItem != null)
+                {
+                    // 以前错过，直接增加错误次数
+                    existingItem.errorCount++;
+                }
+                else
+                {
+                    // 第一次分错，新建一条数据存入列表
+                    WrongItemData newItem = new WrongItemData();
+                    newItem.trashName = currentTrashName;
+                    newItem.correctCategory = currentCorrectCategory.ToString();
+                    newItem.errorCount = 1;
+                    player.wrongBook.Add(newItem);
+                }
+            }
         }
 
-        // ⬅️ 修改点：不再使用协程延迟，而是直接显示“确定”按钮让玩家点击
+        // ⬅️ 核心：无论对错，最后统一通知 DataManager 把最新数据存入硬盘！
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.SavePlayerData();
+        }
+
         btnConfirm.gameObject.SetActive(true);
     }
 
