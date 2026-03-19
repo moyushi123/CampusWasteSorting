@@ -97,7 +97,17 @@ public class DataManager : MonoBehaviour
 
     private void ClosePopup()
     {
+        // 1. 隐藏弹窗
         popupPanel.SetActive(false);
+
+        // 2. 清空登录和注册界面的密码框（保护隐私且强制重新输入）
+        loginPasswordInput.text = "";
+        regPasswordInput.text = "";
+        regConfirmPasswordInput.text = "";
+
+        // 3. 如果你希望连账号框也一起强制清空，只需把下面两行代码开头的双斜杠（//）删掉即可：
+        // loginUsernameInput.text = "";
+         regUsernameInput.text = "";
     }
 
     // --- 界面切换逻辑 ---
@@ -193,6 +203,12 @@ public class DataManager : MonoBehaviour
 
         currentUsername = loginName;
         currentPlayer = loadedData;
+
+        // ⬅️ 新增：跳转场景前，强行销毁当前的事件系统，防止跨场景冲突
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            Destroy(UnityEngine.EventSystems.EventSystem.current.gameObject);
+        }
 
         // 登录成功时，直接跳转场景体验更流畅，不需要玩家再多点一次“确定”
         SceneManager.LoadScene("GameScene");

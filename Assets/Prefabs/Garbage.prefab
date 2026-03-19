@@ -140,3 +140,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b0c71f171c655c48a7ca4a83d0b916b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trashName: "\u9999\u8549\u76AE"
+  correctCategory: 2

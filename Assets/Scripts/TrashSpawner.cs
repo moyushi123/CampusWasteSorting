@@ -1,45 +1,52 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class TrashSpawner : MonoBehaviour
 {
     [Header("生成设置")]
-    public GameObject trashPrefab; // 垃圾预制体（图纸）
-    public int spawnCount = 20;    // 想要生成的垃圾总数
+    [Tooltip("把所有做好的不同垃圾预制体，全部拖进这个数组里")]
+    public GameObject[] trashPrefabs; // ⬅️ 核心改动：从单个 GameObject 变成了 GameObject[] 数组
+    public int spawnCount = 10;
 
     [Header("锚点集合")]
-    public Transform[] spawnPoints; // 你刚才摆放的所有候选点
+    public Transform[] spawnPoints;
 
     void Start()
     {
-        SpawnTrash();
+        SpawnAllTrash();
     }
 
-    void SpawnTrash()
+    private void SpawnAllTrash()
     {
-        // 1. 安全检查：如果没有点位或者没有预制体，就直接退出，防止报错
-        if (spawnPoints.Length == 0 || trashPrefab == null) return;
+        // 安全校验
+        if (trashPrefabs == null || trashPrefabs.Length == 0)
+        {
+            Debug.LogWarning("没有配置垃圾预制体！");
+            return;
+        }
+        if (spawnPoints == null || spawnPoints.Length == 0) return;
 
-        // 2. 创建一个“抽奖箱”，把所有的候选点都放进去
+        // 为了防止两个垃圾刷在同一个点上重叠，我们复制一份锚点列表用来抽取
         List<Transform> availablePoints = new List<Transform>(spawnPoints);
 
-        // 3. 确定实际生成的数量（防呆设计：如果你只要20个，但点只有10个，那就只刷10个）
+        // 确保要生成的数量不会超过锚点的总数量
         int actualSpawnCount = Mathf.Min(spawnCount, availablePoints.Count);
 
-        // 4. 开始“抽卡”！
         for (int i = 0; i < actualSpawnCount; i++)
         {
-            // 在剩下的点位里，随机抽一个“号码牌”
-            int randomIndex = Random.Range(0, availablePoints.Count);
+            // 1. 随机抽取一个空闲的生成点
+            int randomPointIndex = Random.Range(0, availablePoints.Count);
+            Transform point = availablePoints[randomPointIndex];
 
-            // 获取这个号码牌对应的实际坐标点
-            Transform selectedPoint = availablePoints[randomIndex];
+            // 2. 随机抽取一款垃圾预制体
+            int randomTrashIndex = Random.Range(0, trashPrefabs.Length);
+            GameObject trashToSpawn = trashPrefabs[randomTrashIndex];
 
-            // 凭空在这个坐标点生成垃圾
-            Instantiate(trashPrefab, selectedPoint.position, selectedPoint.rotation);
+            // 3. 在该点生成选中的垃圾
+            Instantiate(trashToSpawn, point.position, point.rotation);
 
-            // ⚠️ 最关键的一步：把抽过的点位从箱子里拿走，绝不重复生成！
-            availablePoints.RemoveAt(randomIndex);
+            // 4. 把用过的点从备选列表中剔除
+            availablePoints.RemoveAt(randomPointIndex);
         }
     }
 }
