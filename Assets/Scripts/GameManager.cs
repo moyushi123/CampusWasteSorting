@@ -65,6 +65,13 @@ public class GameManager : MonoBehaviour
     [Tooltip("把玩家身上的移动(Movement)和视角(Camera)脚本拖进来。菜单时自动禁用，游戏时启用，实现完美待机！")]
     public Behaviour[] playerControlScripts;
 
+    [Header("音乐控制")]
+    public AudioSource bgmSource;        // 场景里的音响组件
+    public AudioClip normalMusic;        // 主菜单/游览模式的舒缓音乐
+    public AudioClip challengeMusic;     // 挑战模式的紧张音乐
+
+
+    [Header("当局得分")]
     // --- 运行时状态 ---
     private bool isGameActive = false;
     private bool isChallengeMode = false;
@@ -106,6 +113,16 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+
+        // ⬅️ 新增：绝对防御！只要游戏没开始（在主菜单/结算界面），就强行显示鼠标并解锁
+        if (!isGameActive)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            return; // 既然不在游戏中，直接跳过下面的逻辑
+        }
+
+
         // 仅在游戏进行中时才执行检测
         if (isGameActive)
         {
@@ -140,6 +157,14 @@ public class GameManager : MonoBehaviour
         timeLeft = 180f;
         textTimer.text = "时间: 180s";
         btnExitFreeMode.gameObject.SetActive(false); // 挑战模式不能主动退出，必须等时间到
+
+        // ⬅️ 新增：切换为挑战模式的紧张音乐并播放
+        if (bgmSource != null && challengeMusic != null)
+        {
+            bgmSource.clip = challengeMusic;
+            bgmSource.Play();
+        }
+
         BeginGameplay();
     }
 
