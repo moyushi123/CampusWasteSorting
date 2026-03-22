@@ -4,8 +4,7 @@ using System.Collections.Generic;
 public class TrashSpawner : MonoBehaviour
 {
     [Header("生成设置")]
-    [Tooltip("把所有做好的不同垃圾预制体，全部拖进这个数组里")]
-    public GameObject[] trashPrefabs; // ⬅️ 核心改动：从单个 GameObject 变成了 GameObject[] 数组
+    [Tooltip("开局要从池子里捞多少个垃圾出来摆在地上")]
     public int spawnCount = 10;
 
     [Header("锚点集合")]
@@ -18,34 +17,36 @@ public class TrashSpawner : MonoBehaviour
 
     private void SpawnAllTrash()
     {
-        // 安全校验
-        if (trashPrefabs == null || trashPrefabs.Length == 0)
+        // 1. 新的安全校验：现在只检查锚点够不够，不再检查旧的预制体数组了
+        if (spawnPoints == null || spawnPoints.Length == 0)
         {
-            Debug.LogWarning("没有配置垃圾预制体！");
+            Debug.LogWarning("没有配置生成锚点！");
             return;
         }
-        if (spawnPoints == null || spawnPoints.Length == 0) return;
 
-        // 为了防止两个垃圾刷在同一个点上重叠，我们复制一份锚点列表用来抽取
+        // 2. 复制一份锚点列表用来抽取（防重叠）
         List<Transform> availablePoints = new List<Transform>(spawnPoints);
 
-        // 确保要生成的数量不会超过锚点的总数量
+        // 3. 确保要生成的数量不会超过锚点的总数量
         int actualSpawnCount = Mathf.Min(spawnCount, availablePoints.Count);
 
         for (int i = 0; i < actualSpawnCount; i++)
         {
-            // 1. 随机抽取一个空闲的生成点
+            // 随机抽取一个空闲的生成点
             int randomPointIndex = Random.Range(0, availablePoints.Count);
             Transform point = availablePoints[randomPointIndex];
 
-            // 2. 随机抽取一款垃圾预制体
-            int randomTrashIndex = Random.Range(0, trashPrefabs.Length);
-            GameObject trashToSpawn = trashPrefabs[randomTrashIndex];
+            // ⬅️ 全新核心逻辑：直接向对象池（仓库）申请闲置的垃圾
+            GameObject trashFromPool = TrashPoolManager.Instance.GetTrash();
 
-            // 3. 在该点生成选中的垃圾
-            Instantiate(trashToSpawn, point.position, point.rotation);
+            if (trashFromPool != null)
+            {
+                // 把捞出来的垃圾瞬移到指定的锚点位置
+                trashFromPool.transform.position = point.position;
+                trashFromPool.transform.rotation = point.rotation;
+            }
 
-            // 4. 把用过的点从备选列表中剔除
+            // 把用过的点从备选列表中剔除
             availablePoints.RemoveAt(randomPointIndex);
         }
     }

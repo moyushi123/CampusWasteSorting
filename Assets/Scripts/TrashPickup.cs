@@ -42,7 +42,11 @@ public class TrashPickup : MonoBehaviour
             }
 
             // 将自己销毁（因为已经捡起来开始判定了）
-            Destroy(gameObject);
+            //Destroy(gameObject);
+
+            // ⬅️ 新架构：不再销毁，而是直接隐藏，实现“秒速回收回池子”
+            gameObject.SetActive(false);
+            canPickup = false; // 保险起见，重置一下它的交互状态
         }
     }
 
