@@ -89,9 +89,18 @@ public class ClassificationUIManager : MonoBehaviour
             {
                 DataManager.Instance.currentPlayer.totalScore += 10;
             }
+
+
+            // 汇报看板：答对了！
+            if (DashboardManager.Instance != null) DashboardManager.Instance.RecordResult(currentCorrectCategory, true);
+
         }
         else
         {
+            // 汇报看板：答错了！
+            if (DashboardManager.Instance != null) DashboardManager.Instance.RecordResult(currentCorrectCategory, false);
+
+
             feedbackText.color = Color.red;
             feedbackText.text = "❌ 判定失败！【" + currentTrashName + "】不属于【" + chosenCategory.ToString() + "】哦！\n已记录至错题本，扣除 10 分。";
 
