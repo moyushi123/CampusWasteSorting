@@ -1,19 +1,27 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 public class DashboardManager : MonoBehaviour
 {
-    // µ¥ÀýÄ£Ê½£¬·½±ãÈ«¾Öµ÷ÓÃ
+    // å•ä¾‹æ¨¡å¼ï¼Œæ–¹ä¾¿å…¨å±€è°ƒç”¨
     public static DashboardManager Instance;
 
-    [Header("UI ½ø¶ÈÌõÒýÓÃ")]
-    [Tooltip("°Ñ¶ÔÓ¦µÄ Image(Filled Ä£Ê½) ÍÏ½øÀ´")]
+    [Header("UI è¿›åº¦æ¡å¼•ç”¨")]
+    [Tooltip("æŠŠå¯¹åº”çš„ Image(Filled æ¨¡å¼) æ‹–è¿›æ¥")]
     public Image barRecyclable;
     public Image barHazardous;
     public Image barFood;
     public Image barResidual;
 
-    // ÄÚ²¿Êý¾Ý£º¼ÇÂ¼¸÷´óÀàµÄÕýÈ·ºÍ´íÎó´ÎÊý
+
+    // â¬…ï¸ æ–°å¢žï¼šç»‘å®š UI ä¸Šçš„ç™¾åˆ†æ¯”æ–‡å­—
+    [Header("UI ç™¾åˆ†æ¯”æ–‡å­—å¼•ç”¨")]
+    public Text textRecyclable;
+    public Text textHazardous;
+    public Text textFood;
+    public Text textResidual;
+
+    // å†…éƒ¨æ•°æ®ï¼šè®°å½•å„å¤§ç±»çš„æ­£ç¡®å’Œé”™è¯¯æ¬¡æ•°
     private int correctRecyclable, errorRecyclable;
     private int correctHazardous, errorHazardous;
     private int correctFood, errorFood;
@@ -26,57 +34,68 @@ public class DashboardManager : MonoBehaviour
 
     void Start()
     {
-        // ÓÎÏ·¿ªÊ¼Ê±Ë¢ÐÂÒ»´Î£¬·ÀÖ¹³õÊ¼ÏÔÊ¾´íÂÒ
+        // æ¸¸æˆå¼€å§‹æ—¶åˆ·æ–°ä¸€æ¬¡ï¼Œé˜²æ­¢åˆå§‹æ˜¾ç¤ºé”™ä¹±
         UpdateAllBars();
     }
 
-    // Íâ²¿µ÷ÓÃµÄ½Ó¿Ú£ºÃ¿´Î´ðÍêÌâ£¬·ÖÀàÏµÍ³»á°Ñ½á¹û»ã±¨¸øÕâÀï
+    // å¤–éƒ¨è°ƒç”¨çš„æŽ¥å£ï¼šæ¯æ¬¡ç­”å®Œé¢˜ï¼Œåˆ†ç±»ç³»ç»Ÿä¼šæŠŠç»“æžœæ±‡æŠ¥ç»™è¿™é‡Œ
     public void RecordResult(TrashCategory category, bool isCorrect)
     {
         switch (category)
         {
-            case TrashCategory.¿É»ØÊÕÎï:
+            case TrashCategory.å¯å›žæ”¶ç‰©:
                 if (isCorrect) correctRecyclable++; else errorRecyclable++;
                 break;
-            case TrashCategory.ÓÐº¦À¬»ø:
+            case TrashCategory.æœ‰å®³åžƒåœ¾:
                 if (isCorrect) correctHazardous++; else errorHazardous++;
                 break;
-            case TrashCategory.³øÓàÀ¬»ø:
+            case TrashCategory.åŽ¨ä½™åžƒåœ¾:
                 if (isCorrect) correctFood++; else errorFood++;
                 break;
-            case TrashCategory.ÆäËûÀ¬»ø:
+            case TrashCategory.å…¶ä»–åžƒåœ¾:
                 if (isCorrect) correctResidual++; else errorResidual++;
                 break;
         }
 
-        // ¼ÇÂ¼ÍêÊý¾Ýºó£¬Á¢¿ÌË¢ÐÂ¶ÔÓ¦µÄ UI ½ø¶ÈÌõ
+        // è®°å½•å®Œæ•°æ®åŽï¼Œç«‹åˆ»åˆ·æ–°å¯¹åº”çš„ UI è¿›åº¦æ¡
         UpdateAllBars();
     }
 
-    // ºËÐÄËã·¨£º¼ÆËãÕýÈ·ÂÊ²¢¸üÐÂÌî³äÂú¶È (Fill Amount)
+    // æ ¸å¿ƒç®—æ³•ï¼šè®¡ç®—æ­£ç¡®çŽ‡å¹¶æ›´æ–°å¡«å……æ»¡åº¦ (Fill Amount)
     private void UpdateAllBars()
     {
-        UpdateSingleBar(barRecyclable, correctRecyclable, errorRecyclable);
-        UpdateSingleBar(barHazardous, correctHazardous, errorHazardous);
-        UpdateSingleBar(barFood, correctFood, errorFood);
-        UpdateSingleBar(barResidual, correctResidual, errorResidual);
+        // â¬…ï¸ æ›´æ–°è°ƒç”¨ï¼ŒæŠŠæ–‡å­—ç»„ä»¶ä¹Ÿä¼ è¿›åŽ»
+        UpdateSingleBar(barRecyclable, textRecyclable, correctRecyclable, errorRecyclable);
+        UpdateSingleBar(barHazardous, textHazardous, correctHazardous, errorHazardous);
+        UpdateSingleBar(barFood, textFood, correctFood, errorFood);
+        UpdateSingleBar(barResidual, textResidual, correctResidual, errorResidual);
     }
 
-    private void UpdateSingleBar(Image bar, int correctCount, int errorCount)
+    // â¬…ï¸ æ ¸å¿ƒæ–¹æ³•æ›´æ–°ï¼šæŽ¥æ”¶ Text ç»„ä»¶å¹¶è®¡ç®—ç™¾åˆ†æ¯”
+    private void UpdateSingleBar(Image bar, Text percentText, int correctCount, int errorCount)
     {
         if (bar == null) return;
 
         int totalAttempts = correctCount + errorCount;
 
-        // Èç¹ûÕâ¸öÀ¬»ø»¹´ÓÀ´Ã»±»Ñ¡¹ý£¬¾Í±£³Ö0½ø¶È
+        // å¦‚æžœè¿™ä¸ªåžƒåœ¾è¿˜ä»Žæ¥æ²¡è¢«é€‰è¿‡ï¼Œå°±ä¿æŒ0è¿›åº¦
         if (totalAttempts == 0)
         {
             bar.fillAmount = 0f;
+            if (percentText != null) percentText.text = "0%"; // åˆå§‹çŠ¶æ€æ˜¾ç¤º 0%
             return;
         }
 
-        // ¼ÆËã¹«Ê½£ºÕýÈ·ÂÊ = ÕýÈ·´ÎÊý / ×Ü³¢ÊÔ´ÎÊý
+        // è®¡ç®—å…¬å¼ï¼šæ­£ç¡®çŽ‡ = æ­£ç¡®æ¬¡æ•° / æ€»å°è¯•æ¬¡æ•°
         float accuracyRate = (float)correctCount / totalAttempts;
         bar.fillAmount = accuracyRate;
+
+        // â¬…ï¸ æ–°å¢žï¼šæŠŠå°æ•°è½¬åŒ–ä¸ºæ•´æ•°ç™¾åˆ†æ¯” (æ¯”å¦‚ 0.856 -> 86%)
+        if (percentText != null)
+        {
+            int percent = Mathf.RoundToInt(accuracyRate * 100);
+            percentText.text = percent + "%";
+        }
     }
+   
 }

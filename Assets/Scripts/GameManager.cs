@@ -85,6 +85,12 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // ⬅️ 新增：强行重置时间流速，防止上局游戏的暂停状态残留
+        Time.timeScale = 1f;
+
+        // ... 下面是你原本 Start 里的代码 ...
+
+
         // 1. 初始化 UI 状态：只显示主菜单
         mainMenuUI.SetActive(true);
         gameplayUI.SetActive(false);
@@ -221,6 +227,13 @@ public class GameManager : MonoBehaviour
 
     private void RestartScene()
     {
+
+        // ⬅️ 退出前解冻时间并解锁鼠标，确保主菜单正常运作
+        Time.timeScale = 1f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+
         // 核心魔法：重新加载当前场景，所有的垃圾、人物位置都会完美复原！
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

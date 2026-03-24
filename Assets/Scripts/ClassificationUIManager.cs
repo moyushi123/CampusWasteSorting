@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using StarterAssets; // ⬅️ 新增这一行，让脚本认识官方控制器
 
 public enum TrashCategory
 {
@@ -11,7 +12,13 @@ public enum TrashCategory
 
 public class ClassificationUIManager : MonoBehaviour
 {
+
     public static ClassificationUIManager Instance;
+
+
+    [Header("玩家输入控制")]
+    public StarterAssetsInputs playerInputs; // ⬅️ 新增：用来控制玩家视角的开关
+
 
     [Header("UI 面板引用")]
     public GameObject classificationPanel;
@@ -56,6 +63,13 @@ public class ClassificationUIManager : MonoBehaviour
 
     public void OpenClassificationPanel(string trashName, TrashCategory correctCategory)
     {
+
+        if (playerInputs != null)
+        {
+            playerInputs.cursorInputForLook = false; // ⬅️ 新增：面板打开，禁止鼠标转动视角
+        }
+
+
         currentTrashName = trashName;
         currentCorrectCategory = correctCategory;
 
@@ -145,6 +159,13 @@ public class ClassificationUIManager : MonoBehaviour
     // ⬅️ 新增：点击确定按钮后执行的方法
     private void ClosePanel()
     {
+
+        if (playerInputs != null)
+        {
+            playerInputs.cursorInputForLook = true; // ⬅️ 新增：面板关闭，恢复鼠标转动视角
+        }
+
+
         Time.timeScale = 1f;
         classificationPanel.SetActive(false);
         SetButtonsInteractable(true);
