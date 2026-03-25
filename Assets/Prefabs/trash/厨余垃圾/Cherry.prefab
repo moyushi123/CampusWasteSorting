@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8935740421354006698}
   - component: {fileID: 4942530712940867989}
   - component: {fileID: 4730989786828609603}
+  - component: {fileID: -6865558530466433946}
   m_Layer: 0
   m_Name: Cherry
   m_TagString: Untagged
@@ -121,3 +122,30 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.440447, y: 1.9826528, z: 4.104159}
   m_Center: {x: -0.07335304, y: 0.9913264, z: -0.45807368}
+--- !u!54 &-6865558530466433946
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3229256119078013074}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6820189697069526725}
   - component: {fileID: 2234638752149452426}
   - component: {fileID: 1155870462693610317}
+  - component: {fileID: -4504162173658170304}
   m_Layer: 0
   m_Name: Pizza
   m_TagString: Untagged
@@ -120,3 +121,30 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.8469548, y: 0.81122154, z: 1.7386304}
   m_Center: {x: -0.016141154, y: 0.3759359, z: -0.010715971}
+--- !u!54 &-4504162173658170304
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8073803142194423388}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

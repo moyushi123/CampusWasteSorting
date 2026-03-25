@@ -1,25 +1,28 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.AI;
 
 public class NPCPatrol : MonoBehaviour
 {
-    [Header("Ñ²ÂßÉèÖÃ")]
-    [Tooltip("°Ñ³¡¾°Àï½¨ºÃµÄ¼¸¸ö¿ÕÎïÌåÍÏ½øÕâ¸öÊı×é£¬×÷ÎªÑ²ÂßÄ¿±êµã")]
+    [Header("å·¡é€»è®¾ç½®")]
     public Transform[] waypoints;
     private int currentWaypointIndex;
     private NavMeshAgent agent;
+    private Animator animator; // â¬…ï¸ æ–°å¢ï¼šç”¨æ¥æ§åˆ¶èµ°è·¯åŠ¨ç”»
 
-    [Header("ÈÓÀ¬»øĞĞÎª")]
-    [Tooltip("Ã¿¸ô¼¸ÃëÖÓÔÚµØÉÏÇÄÇÄÈÓÒ»¸öÀ¬»ø")]
+    [Header("ç­‰å¾…ä¸æ‰”åƒåœ¾")]
+    public float waitTimeAtWaypoint = 3f; // åˆ°äº†ç»ˆç‚¹ç­‰å‡ ç§’
+    private float waitTimer;
+    private bool isWaiting = false;
+
+    [Header("æ‰”åƒåœ¾è¡Œä¸º")]
     public float throwInterval = 8f;
     private float throwTimer;
 
     void Start()
     {
-        // »ñÈ¡¹ÒÔÚ×Ô¼ºÉíÉÏµÄµ¼º½×é¼ş
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>(); // è·å–å¥¹èº«ä¸Šçš„åŠ¨ç”»ç»„ä»¶
 
-        // ÓÎÏ·Ò»¿ªÊ¼£¬Èç¹ûÉèÖÃÁËÂ·µã£¬¾ÍÏòµÚÒ»¸öµã×ßÈ¥
         if (waypoints != null && waypoints.Length > 0)
         {
             agent.SetDestination(waypoints[0].position);
@@ -28,41 +31,77 @@ public class NPCPatrol : MonoBehaviour
 
     void Update()
     {
-        // ------------------ ĞĞÎª 1£º×Ô¶¯Ñ²Âß ------------------
-        // ÅĞ¶ÏÊÇ·ñÒÑ¾­¿ì×ßµ½µ±Ç°Ä¿±êµãÁË£¨¾àÀëĞ¡ÓÚ0.5Ã×£©£¬²¢ÇÒÏµÍ³ÕıÔÚ¼ÆËãÂ·¾¶
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        // --- æ ¸å¿ƒ 1ï¼šå®æ—¶æ›´æ–°åŠ¨ç”» ---
+        if (animator != null && agent != null)
         {
-            // ÇĞ»»µ½ÏÂÒ»¸öÄ¿±êµã£¨ÓÃÈ¡ÓàÊıµÄ·½·¨ÊµÏÖÑ­»·£º0->1->2->0£©
-            if (waypoints.Length > 0)
-            {
-                currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
-                agent.SetDestination(waypoints[currentWaypointIndex].position);
-            }
+            // è·å–å¥¹å½“å‰ç§»åŠ¨çš„é€Ÿåº¦ï¼Œä¼ ç»™åŠ¨ç”»æœº
+            float currentSpeed = agent.velocity.magnitude;
+            animator.SetFloat("Speed", currentSpeed);
         }
 
-        // ------------------ ĞĞÎª 2£º¶¨Ê±´Ó³Ø×ÓÀïÀÌÀ¬»øÈÓµô ------------------
+        // --- æ ¸å¿ƒ 2ï¼šå®šæ—¶æ‰”åƒåœ¾ ---
         throwTimer += Time.deltaTime;
         if (throwTimer >= throwInterval)
         {
             ThrowTrash();
-            throwTimer = 0f; // ¼ÆÊ±Æ÷ÇåÁã£¬ÖØĞÂ¿ªÊ¼ËãÊ±¼ä
+            throwTimer = 0f;
+        }
+
+        // --- æ ¸å¿ƒ 3ï¼šé«˜çº§å·¡é€»ï¼ˆå¸¦åœé¡¿çŠ¶æ€æœºï¼‰ ---
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        {
+            if (!isWaiting)
+            {
+                // åˆšåˆ°è¾¾ç›®æ ‡ç‚¹ï¼Œå¼€å§‹åœä¸‹å‘å‘†
+                isWaiting = true;
+                waitTimer = 0f;
+                agent.isStopped = true; // åˆ¹è½¦
+            }
+            else
+            {
+                // æ­£åœ¨å‘å‘†ç­‰å¾…ä¸­...
+                waitTimer += Time.deltaTime;
+                if (waitTimer >= waitTimeAtWaypoint)
+                {
+                    // ç­‰å¾…æ—¶é—´ç»“æŸï¼Œç»§ç»­èµ°å‘ä¸‹ä¸€ä¸ªç‚¹
+                    isWaiting = false;
+                    agent.isStopped = false; // æ¾å¼€åˆ¹è½¦
+
+                    if (waypoints.Length > 0)
+                    {
+                        currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+                        agent.SetDestination(waypoints[currentWaypointIndex].position);
+                    }
+                }
+            }
         }
     }
 
     private void ThrowTrash()
     {
-        // ºËĞÄ£ºÖ±½Óµ÷ÓÃÎÒÃÇÖ®Ç°Ğ´ºÃµÄÈ«¾Ö¶ÔÏó³Ø£¡
         if (TrashPoolManager.Instance != null)
         {
             GameObject trash = TrashPoolManager.Instance.GetTrash();
             if (trash != null)
             {
-                // °Ñ´Ó³Ø×ÓÀïÀÌ³öÀ´µÄÀ¬»ø£¬·ÅÔÚ NPC µ±Ç°µÄ½ÅÏÂ
-                trash.transform.position = transform.position;
-
-                // ÉÔÎ¢¸ø¸öËæ»úĞı×ª£¬ÈÃµôÔÚµØÉÏµÄÀ¬»ø¿´ÆğÀ´×ÔÈ»Ò»µã£¬²»ÊÇÕûÕûÆëÆëµÄ
+                // ä»è„šåº•ç¨å¾®å¾€ä¸ŠæŠ¬é«˜ 0.5 ç±³æ‰”å‡ºæ¥ï¼Œé˜²æ­¢åƒåœ¾ç›´æ¥æ‰è¿›åœ°ä¸‹å®¤
+                trash.transform.position = transform.position + Vector3.up * 0.5f;
                 trash.transform.rotation = Random.rotation;
             }
         }
     }
+
+
+    // â¬…ï¸ æ–°å¢ï¼šä¸“é—¨ç”¨æ¥â€œæ¥ä½â€å®˜æ–¹èµ°è·¯åŠ¨ç”»å‘å‡ºçš„è„šæ­¥äº‹ä»¶ï¼Œé˜²æ­¢æŠ¥é”™å¡æ­»åŠ¨ç”»
+    public void OnFootstep(AnimationEvent animationEvent)
+    {
+        // é‡Œé¢ä»€ä¹ˆéƒ½ä¸ç”¨å†™ã€‚ç³»ç»Ÿæ‰¾åˆ°è¿™ä¸ªæ–¹æ³•å°±ä¸ä¼šæŠ¥é”™äº†ã€‚
+        // ï¼ˆå¦‚æœä½ ä»¥åæƒ³ç»™ NPC åŠ é«˜è·Ÿé‹èµ°è·¯çš„å£°éŸ³ï¼Œå°±å¯ä»¥æŠŠæ’­æ”¾éŸ³æ•ˆçš„ä»£ç å†™åœ¨è¿™é‡Œï¼‰
+    }
+
+    // â¬…ï¸ æ–°å¢ï¼šå®˜æ–¹åŠ¨ç”»å¯èƒ½è¿˜ä¼šå¸¦è½åœ°äº‹ä»¶ï¼Œé¡ºä¾¿ä¸€èµ·æ¥ä½ï¼Œä»¥é˜²ä¸‡ä¸€
+    public void OnLand(AnimationEvent animationEvent)
+    {
+    }
+
 }

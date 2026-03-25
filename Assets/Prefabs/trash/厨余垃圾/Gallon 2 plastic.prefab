@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4859639941020004408}
   - component: {fileID: 690875458200792545}
   - component: {fileID: 6513639051422973616}
+  - component: {fileID: -590278685472260480}
   m_Layer: 0
   m_Name: Gallon 2 plastic
   m_TagString: Untagged
@@ -95,6 +96,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trashName: "\u5E9F\u65E7\u6CB9\u6F06\u6876"
   correctCategory: 1
+--- !u!54 &-590278685472260480
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099138382297926474}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3265959233924588897
 GameObject:
   m_ObjectHideFlags: 0

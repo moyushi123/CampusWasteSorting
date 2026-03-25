@@ -71,12 +71,18 @@ public class GameManager : MonoBehaviour
     public AudioClip challengeMusic;     // 挑战模式的紧张音乐
 
 
+    // ⬅️ 新增：绑定 NPC 巡逻脚本
+    [Header("NPC 控制")]
+    public NPCPatrol npcPatrolScript;
+
+
     [Header("当局得分")]
     // --- 运行时状态 ---
+    public int currentMatchScore = 0; // 当局得分
     private bool isGameActive = false;
     private bool isChallengeMode = false;
     private float timeLeft = 180f;
-    public int currentMatchScore = 0; // 当局得分
+    
 
     void Awake()
     {
@@ -192,6 +198,12 @@ public class GameManager : MonoBehaviour
 
         SetPlayerControl(true); // 恢复玩家控制，鼠标隐藏锁定
         isGameActive = true;
+
+        // ⬅️ 新增：游戏开始，唤醒 NPC 开始巡逻扔垃圾！
+        if (npcPatrolScript != null)
+        {
+            npcPatrolScript.enabled = true;
+        }
     }
 
     private void EndMatch()
@@ -201,6 +213,12 @@ public class GameManager : MonoBehaviour
 
         gameplayUI.SetActive(false);
         settlementUI.SetActive(true);
+
+        // ⬅️ 新增：游戏结束，让 NPC 停止巡逻
+        if (npcPatrolScript != null)
+        {
+            npcPatrolScript.enabled = false;
+        }
 
         // --- 核心数据结算 ---
         textGameOverTitle.text = isChallengeMode ? "挑战结束！" : "游览结束！";

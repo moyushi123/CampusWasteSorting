@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1949909321895666002}
   - component: {fileID: 676703156296475698}
   - component: {fileID: 1243500120379749710}
+  - component: {fileID: -4280623671792221863}
   m_Layer: 0
   m_Name: Vanilla_Ice_Cream_5
   m_TagString: Untagged
@@ -144,3 +145,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trashName: "\u51B0\u6DC7\u51CC"
   correctCategory: 2
+--- !u!54 &-4280623671792221863
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921292010163848067}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
