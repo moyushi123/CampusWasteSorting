@@ -71,9 +71,8 @@ public class GameManager : MonoBehaviour
     public AudioClip challengeMusic;     // 挑战模式的紧张音乐
 
 
-    // ⬅️ 新增：绑定 NPC 巡逻脚本
-    [Header("NPC 控制")]
-    public NPCPatrol npcPatrolScript;
+    [Header("NPC 控制群组")]
+    public NPCPatrol[] allNPCs; // ⬅️ 新增：变成一个数组，可以装下无数个 NPC
 
 
     [Header("当局得分")]
@@ -199,25 +198,35 @@ public class GameManager : MonoBehaviour
         SetPlayerControl(true); // 恢复玩家控制，鼠标隐藏锁定
         isGameActive = true;
 
-        // ⬅️ 新增：游戏开始，唤醒 NPC 开始巡逻扔垃圾！
-        if (npcPatrolScript != null)
+        // ⬅️ 更新：游戏开始，循环唤醒所有 NPC 开始巡逻扔垃圾！
+        if (allNPCs != null && allNPCs.Length > 0)
         {
-            npcPatrolScript.enabled = true;
+            foreach (var npc in allNPCs)
+            {
+                if (npc != null) npc.enabled = true;
+            }
         }
     }
 
     private void EndMatch()
     {
         isGameActive = false;
+
+        // ⬅️ 新增这行绝杀代码：时间冻结！让整个世界的物理、动画、NPC寻路瞬间停止
+        Time.timeScale = 0f;
+
         SetPlayerControl(false); // 再次剥夺控制权，呼出鼠标
 
         gameplayUI.SetActive(false);
         settlementUI.SetActive(true);
 
-        // ⬅️ 新增：游戏结束，让 NPC 停止巡逻
-        if (npcPatrolScript != null)
+        // ⬅️ 更新：游戏结束，让所有 NPC 停止巡逻
+        if (allNPCs != null && allNPCs.Length > 0)
         {
-            npcPatrolScript.enabled = false;
+            foreach (var npc in allNPCs)
+            {
+                if (npc != null) npc.enabled = false;
+            }
         }
 
         // --- 核心数据结算 ---
