@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine.InputSystem;
+using System;
 
 
 // ==========================================
@@ -382,4 +383,74 @@ public class GameManager : MonoBehaviour
         Cursor.visible = !canControl;
         Cursor.lockState = canControl ? CursorLockMode.Locked : CursorLockMode.None;
     }
+
+
+    // ==========================================
+    // 账号登出逻辑
+    // ==========================================
+    public void ReturnToLogin()
+    {
+        // 1. 保险起见，确保时间流速是正常的（防止在暂停时点击退回）
+        Time.timeScale = 1f;
+
+        // 2. 清空当前加载的玩家数据（防止下一个账号登录时数据串位）
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.currentPlayer = null;
+            DataManager.Instance.currentUsername = "";
+        }
+
+        // 3. 载入登录场景！
+        // ⚠️ 注意：把 "LoginScene" 换成你真正的登录场景的名字！
+        // 如果你的登录场景在 Build Settings 里排第 0 个，也可以写 SceneManager.LoadScene(0);
+        SceneManager.LoadScene("LoginScene");
+    }
+
+
+
+    // ==========================================
+    // 方案 A：工业级数据导出功能
+    // ==========================================
+    public void ExportReportToDesktop()
+    {
+        if (DataManager.Instance == null || DataManager.Instance.currentPlayer == null) return;
+
+        try
+        {
+            // 1. 获取电脑桌面的路径
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string fileName = "校园环保卫士_成绩单_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv";
+            string filePath = Path.Combine(desktopPath, fileName);
+
+            // 2. 准备 CSV 内容 (逗号分隔)
+            // 防止中文乱码，加上 UTF8 BOM 头
+            using (StreamWriter sw = new StreamWriter(filePath, false, new System.Text.UTF8Encoding(true)))
+            {
+                // 写表头
+                sw.WriteLine("玩家账号,总得分,导出时间");
+                // 写基础数据
+                sw.WriteLine($"{DataManager.Instance.currentUsername},{DataManager.Instance.currentPlayer.totalScore},{DateTime.Now}");
+
+                sw.WriteLine(""); // 空一行
+
+                // 写错题本表头
+                sw.WriteLine("错题本记录");
+                sw.WriteLine("垃圾名称,正确分类,错误次数");
+
+                // 写错题本数据
+                foreach (var item in DataManager.Instance.currentPlayer.wrongBook)
+                {
+                    sw.WriteLine($"{item.trashName},{item.correctCategory},{item.errorCount}");
+                }
+            }
+
+            Debug.Log("✅ 成绩单已成功导出至桌面：" + filePath);
+            // 提示：如果你有 UI 提示框，可以在这里弹个窗告诉玩家“导出成功！”
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("导出失败：" + e.Message);
+        }
+    }
+
 }
