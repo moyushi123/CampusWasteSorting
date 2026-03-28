@@ -95,6 +95,12 @@ public class ClassificationUIManager : MonoBehaviour
             feedbackText.color = Color.green;
             feedbackText.text = "✅ 判定成功！加 10 分！";
 
+            // ⬅️ 新增日志：记录玩家分类成功
+            if (SystemLogger.Instance != null)
+            {
+                SystemLogger.Instance.AddLog($"[玩家] 成功将 [{currentTrashName}] 分入 {currentCorrectCategory}，得分 +10");
+            }
+
             // ⬅️ 新增：调用 GameManager 增加当局得分
             if (GameManager.Instance != null) GameManager.Instance.AddScore(10);
 
@@ -117,6 +123,14 @@ public class ClassificationUIManager : MonoBehaviour
 
             feedbackText.color = Color.red;
             feedbackText.text = "❌ 判定失败！【" + currentTrashName + "】不属于【" + chosenCategory.ToString() + "】哦！\n已记录至错题本，扣除 10 分。";
+
+
+            // ⬅️ 新增日志：记录玩家分类失败
+            if (SystemLogger.Instance != null)
+            {
+                SystemLogger.Instance.AddLog($"[玩家] 警告！错误地将 [{currentTrashName}] 放入 {chosenCategory}，扣除 10 分");
+            }
+
 
             // ⬅️ 新增：调用 GameManager 扣除当局得分
             if (GameManager.Instance != null) GameManager.Instance.AddScore(-10);

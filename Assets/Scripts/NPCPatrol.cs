@@ -7,10 +7,10 @@ public class NPCPatrol : MonoBehaviour
     public Transform[] waypoints;
     private int currentWaypointIndex;
     private NavMeshAgent agent;
-    private Animator animator; // ⬅️ 新增：用来控制走路动画
+    private Animator animator;
 
     [Header("等待与扔垃圾")]
-    public float waitTimeAtWaypoint = 3f; // 到了终点等几秒
+    public float waitTimeAtWaypoint = 3f;
     private float waitTimer;
     private bool isWaiting = false;
 
@@ -18,10 +18,16 @@ public class NPCPatrol : MonoBehaviour
     public float throwInterval = 8f;
     private float throwTimer;
 
+    // ⬇️ 新增：环保宣传防刷分机制
+    [Header("环保宣传状态")]
+    public bool isGoodCitizen = false; // 是否处于不扔垃圾的“好市民”状态
+    public float goodCitizenDuration = 60f; // 宣传一次管用 60 秒
+    private float goodCitizenTimer = 0f;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        animator = GetComponent<Animator>(); // 获取她身上的动画组件
+        animator = GetComponent<Animator>();
 
         if (waypoints != null && waypoints.Length > 0)
         {
@@ -31,41 +37,51 @@ public class NPCPatrol : MonoBehaviour
 
     void Update()
     {
-        // --- 核心 1：实时更新动画 ---
         if (animator != null && agent != null)
         {
-            // 获取她当前移动的速度，传给动画机
             float currentSpeed = agent.velocity.magnitude;
             animator.SetFloat("Speed", currentSpeed);
         }
 
-        // --- 核心 2：定时扔垃圾 ---
-        throwTimer += Time.deltaTime;
-        if (throwTimer >= throwInterval)
+        // ⬇️ 核心改造：状态机分流
+        if (isGoodCitizen)
         {
-            ThrowTrash();
-            throwTimer = 0f;
+            // 如果是好市民，不增加扔垃圾的时间，而是倒计时“好市民 Buff”
+            goodCitizenTimer -= Time.deltaTime;
+            if (goodCitizenTimer <= 0)
+            {
+                isGoodCitizen = false; // 60秒到了，又开始乱扔垃圾了
+                if (SystemLogger.Instance != null)
+                    SystemLogger.Instance.AddLog($"监控警告：某 NPC 的环保 Buff 结束，重回作案状态...");
+            }
+        }
+        else
+        {
+            // 只有不是好市民的时候，才定时扔垃圾
+            throwTimer += Time.deltaTime;
+            if (throwTimer >= throwInterval)
+            {
+                ThrowTrash();
+                throwTimer = 0f;
+            }
         }
 
-        // --- 核心 3：高级巡逻（带停顿状态机） ---
+        // --- 核心 3：高级巡逻（保持不变） ---
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
             if (!isWaiting)
             {
-                // 刚到达目标点，开始停下发呆
                 isWaiting = true;
                 waitTimer = 0f;
-                agent.isStopped = true; // 刹车
+                agent.isStopped = true;
             }
             else
             {
-                // 正在发呆等待中...
                 waitTimer += Time.deltaTime;
                 if (waitTimer >= waitTimeAtWaypoint)
                 {
-                    // 等待时间结束，继续走向下一个点
                     isWaiting = false;
-                    agent.isStopped = false; // 松开刹车
+                    agent.isStopped = false;
 
                     if (waypoints.Length > 0)
                     {
@@ -84,24 +100,44 @@ public class NPCPatrol : MonoBehaviour
             GameObject trash = TrashPoolManager.Instance.GetTrash();
             if (trash != null)
             {
-                // 从脚底稍微往上抬高 0.5 米扔出来，防止垃圾直接掉进地下室
                 trash.transform.position = transform.position + Vector3.up * 0.5f;
                 trash.transform.rotation = Random.rotation;
+
+                TrashPickup pickupScript = trash.GetComponent<TrashPickup>();
+                string realTrashName = (pickupScript != null) ? pickupScript.trashName : trash.name.Replace("(Clone)", "");
+
+                if (SystemLogger.Instance != null)
+                {
+                    SystemLogger.Instance.AddLog($"监控警告：发现 NPC 丢弃了 [{realTrashName}]");
+                }
             }
         }
     }
 
-
-    // ⬅️ 新增：专门用来“接住”官方走路动画发出的脚步事件，防止报错卡死动画
-    public void OnFootstep(AnimationEvent animationEvent)
+    // ⬇️ 新增：暴露给玩家的互动接口
+    public void EducateNPC()
     {
-        // 里面什么都不用写。系统找到这个方法就不会报错了。
-        // （如果你以后想给 NPC 加高跟鞋走路的声音，就可以把播放音效的代码写在这里）
+        if (isGoodCitizen)
+        {
+            // 防刷分：已经被教育过了，再按 E 也没用
+            if (SystemLogger.Instance != null)
+                SystemLogger.Instance.AddLog($"[系统] 该同学目前表现良好，无需重复宣传！");
+            return;
+        }
+
+        // 核心逻辑：设为好市民，给玩家加分！
+        isGoodCitizen = true;
+        goodCitizenTimer = goodCitizenDuration;
+
+        if (SystemLogger.Instance != null)
+            SystemLogger.Instance.AddLog($"[玩家] 成功进行环保宣传！NPC 停止丢弃垃圾 60 秒。得分 +5");
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.AddScore(5);
+
+        // 如果你需要更新总分，也可以加一句 DataManager 的代码
     }
 
-    // ⬅️ 新增：官方动画可能还会带落地事件，顺便一起接住，以防万一
-    public void OnLand(AnimationEvent animationEvent)
-    {
-    }
-
+    public void OnFootstep(AnimationEvent animationEvent) { }
+    public void OnLand(AnimationEvent animationEvent) { }
 }
