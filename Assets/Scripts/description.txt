@@ -1,0 +1,44 @@
+📁 1_Managers（全局与系统控制）
+这里放统领全局、负责宏观调度的“总控大腕”。
+
+GameManager (游戏主流程与跨场景核心)
+
+SystemLogger (系统日志中心)
+
+DayNightCycle (昼夜环境控制，也算宏观系统)
+
+📁 2_Data（数据与数据库底层）
+咱们刚刚浴血奋战打下的 SQLite 江山，全放在这里，这是你项目的“硬核数据层”。
+
+DatabaseManager (SQLite 数据库管家)
+
+GameSession (跨场景数据通行证)
+
+DataManager (虽然现在主要管登录 UI，但本质是账号数据入口)
+
+DatabaseTest (之前那个探路测试脚本，建议直接删掉，或者留在这一层当纪念)
+
+📁 3_UI（用户界面与表现）
+所有玩家能看到的面板、弹窗、进度条控制脚本，全扔这。
+
+ClassificationUIManager (垃圾分类面板)
+
+DashboardManager (四大类进度条看板)
+
+📁 4_Gameplay（核心玩法机制）
+游戏里最核心的底层业务逻辑：垃圾的生成、回收、对象池。
+
+TrashSpawner (垃圾生成器)
+
+TrashPoolManager (垃圾对象池管理)
+
+TrashPickup (玩家拾取垃圾的行为)
+
+📁 5_Entities（场景实体与交互）
+场景里具体存在的东西，以及与它们交互的触发器。
+
+NPCPatrol (NPC 的巡逻行为)
+
+NPCInteractTrigger (靠近 NPC 触发对话/UI 的探测器)
+
+DoorController (门的开关控制)
