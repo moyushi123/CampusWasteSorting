@@ -12,7 +12,7 @@ public class DatabaseTest : MonoBehaviour
         string dbPath = Path.Combine(Application.persistentDataPath, "TestDB.sqlite");
         string connectionString = "URI=file:" + dbPath;
 
-        Debug.Log("📂 【探路针】目标数据库路径: " + dbPath);
+        Debug.Log("📂 【目标数据库路径】目标数据库路径: " + dbPath);
 
         try
         {
@@ -29,12 +29,12 @@ public class DatabaseTest : MonoBehaviour
                 }
             }
             // 如果代码能安全走到这里，说明 DLL 环境 100% 完美！
-            Debug.Log("✅ 【探路成功】数据库连接完美！建表成功！Unity 引擎环境无懈可击！");
+            Debug.Log("✅ 【连接成功】数据库连接完美！建表成功！Unity 引擎环境无懈可击！");
         }
         catch (Exception e)
         {
             // 如果 DLL 没装好，或者路径没有写入权限，这里会爆红
-            Debug.LogError("❌ 【探路失败】环境配置有问题，报错信息: " + e.Message);
+            Debug.LogError("❌ 【连接失败】环境配置有问题，报错信息: " + e.Message);
         }
     }
 }
