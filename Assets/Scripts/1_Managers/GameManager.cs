@@ -171,13 +171,18 @@ public class GameManager : MonoBehaviour
     private void EndMatch()
     {
         isGameActive = false;
+
+        // 冻结游戏时间
         Time.timeScale = 0f;
 
+        // 剥夺玩家控制权，呼出鼠标
         SetPlayerControl(false);
 
+        // 切换 UI 面板
         gameplayUI.SetActive(false);
         settlementUI.SetActive(true);
 
+        // 停止所有 NPC 的巡逻
         if (allNPCs != null && allNPCs.Length > 0)
         {
             foreach (var npc in allNPCs)
@@ -186,37 +191,59 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // 结算面板文字更新
         textGameOverTitle.text = isChallengeMode ? "挑战结束！" : "游览结束！";
         textFinalScore.text = "本次得分: " + currentMatchScore;
 
-        // 🌟 核心改造：直连数据库更新总分
+        // ==========================================
+        // 核心：带有防并发事务控制的数据库写入逻辑
+        // ==========================================
         if (GameSession.IsLoggedIn)
         {
             using (var conn = DatabaseManager.GetConnection())
             {
                 conn.Open();
 
-                // 1. 先查出之前的历史总分
-                int currentTotal = 0;
-                using (var cmd = conn.CreateCommand())
+                // 【开启事务】如果中途发生异常，数据会自动回滚，保证 ACID 特性
+                using (var transaction = conn.BeginTransaction())
                 {
-                    cmd.CommandText = "SELECT totalScore FROM UserTable WHERE username = @user";
-                    cmd.Parameters.AddWithValue("@user", GameSession.CurrentUsername);
-                    object result = cmd.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
+                    try
                     {
-                        currentTotal = Convert.ToInt32(result);
-                    }
-                }
+                        // 1. 先查出之前的历史总分
+                        int currentTotal = 0;
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = transaction; // 绑定事务
+                            cmd.CommandText = "SELECT totalScore FROM UserTable WHERE username = @user";
+                            cmd.Parameters.AddWithValue("@user", GameSession.CurrentUsername);
+                            object result = cmd.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                            {
+                                currentTotal = Convert.ToInt32(result);
+                            }
+                        }
 
-                // 2. 加上本局得分，存回数据库
-                int newTotal = currentTotal + currentMatchScore;
-                using (var updateCmd = conn.CreateCommand())
-                {
-                    updateCmd.CommandText = "UPDATE UserTable SET totalScore = @score WHERE username = @user";
-                    updateCmd.Parameters.AddWithValue("@score", newTotal);
-                    updateCmd.Parameters.AddWithValue("@user", GameSession.CurrentUsername);
-                    updateCmd.ExecuteNonQuery();
+                        // 2. 加上本局得分，存回数据库
+                        int newTotal = currentTotal + currentMatchScore;
+                        using (var updateCmd = conn.CreateCommand())
+                        {
+                            updateCmd.Transaction = transaction; // 绑定事务
+                            updateCmd.CommandText = "UPDATE UserTable SET totalScore = @score WHERE username = @user";
+                            updateCmd.Parameters.AddWithValue("@score", newTotal);
+                            updateCmd.Parameters.AddWithValue("@user", GameSession.CurrentUsername);
+                            updateCmd.ExecuteNonQuery();
+                        }
+
+                        // 3. 【提交事务】确认无误，将所有更改写入数据库
+                        transaction.Commit();
+                        Debug.Log("✅ 事务提交成功：本局分数已安全累加至数据库！");
+                    }
+                    catch (Exception ex)
+                    {
+                        // 4. 【回滚事务】一旦发生任何异常，立刻撤销刚才的操作，保护数据库完整性
+                        transaction.Rollback();
+                        Debug.LogError("❌ 写入失败，事务已回滚！错误信息：" + ex.Message);
+                    }
                 }
             }
 
