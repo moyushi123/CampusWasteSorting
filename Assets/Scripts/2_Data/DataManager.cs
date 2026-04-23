@@ -47,15 +47,20 @@ public class DataManager : MonoBehaviour
     public Button btnConfirmRegister;
     public Button btnBackToLogin;
 
+    [Header("退出游戏")]
+    public Button btnExitGame;   // 退出游戏按钮
+
+
+
     // ==========================================
-    // 🌟 核心救火点：把老员工们要找的变量加回来，骗过编译器！
+    //
     // ==========================================
     [Header("临时兼容旧代码（即将废弃）")]
     public string currentUsername = "";
     public PlayerData currentPlayer = new PlayerData(); // 给个空壳，防止报 Null 错误
     public void SavePlayerData()
     {
-        // 留个空壳方法，啥也不干，专门用来堵住 GameManager 的嘴
+        // 留个空壳方法，啥也不干，专门用来堵住 GameManager 
     }
     // ==========================================
 
@@ -77,7 +82,20 @@ public class DataManager : MonoBehaviour
         btnGoToRegister.onClick.AddListener(ShowRegisterBox);
         btnConfirmRegister.onClick.AddListener(OnRegisterClicked);
         btnBackToLogin.onClick.AddListener(ShowLoginBox);
+        btnExitGame.onClick.AddListener(OnExitGameClicked);
     }
+
+    private void OnExitGameClicked()
+    {
+        // 如果在 Unity 编辑器里运行，就用编辑器的停止播放
+    #if UNITY_EDITOR
+           UnityEditor.EditorApplication.isPlaying = false;
+    #else
+        // 真机/打包后才能真正退出应用
+        Application.Quit();
+    #endif
+    }
+
 
     private void ShowPopup(string message)
     {

@@ -3054,7 +3054,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1194169215}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.2622473
+  m_Size: 0.51179415
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5274,7 +5274,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ----------------------------------------------------
+  m_Text: ---------------------------------------------------
 --- !u!114 &490462207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9406,9 +9406,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 98d39a87479556e40874fc9cbf05cee9, type: 3}
+  m_audioClip: {fileID: 8300000, guid: e974bec884b246a4a8deabe13001a595, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.252
+  m_Volume: 0.03
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -238464,8 +238464,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -720.94244, y: -501.094}
-  m_SizeDelta: {x: 476.659, y: 78.135}
+  m_AnchoredPosition: {x: -720.94244, y: -463.918}
+  m_SizeDelta: {x: 476.659, y: 152.486}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1126392970
 MonoBehaviour:
@@ -246236,8 +246236,8 @@ MonoBehaviour:
   - {fileID: 172983604}
   - {fileID: 172983603}
   bgmSource: {fileID: 984559295}
-  normalMusic: {fileID: 8300000, guid: 98d39a87479556e40874fc9cbf05cee9, type: 3}
-  challengeMusic: {fileID: 8300000, guid: 119ffa6e0fca1cd46b1105b3cb9759e9, type: 3}
+  normalMusic: {fileID: 8300000, guid: e974bec884b246a4a8deabe13001a595, type: 3}
+  challengeMusic: {fileID: 8300000, guid: 0035aeb6dd59d1d4181fa96d674bf765, type: 3}
   allNPCs:
   - {fileID: 534626000}
   - {fileID: 594607424}
